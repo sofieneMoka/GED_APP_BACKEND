@@ -1,5 +1,6 @@
+import os
 from flask import Blueprint, jsonify, request
-from models import SubCategory, SubCategorySchema, db
+from models import Category, SubCategory, SubCategorySchema, db
 
 
 #blueprint setup
@@ -11,10 +12,18 @@ subCategory = Blueprint('subCategory',__name__)
 def AddSubCategory():
     req_Json = request.json
     name = req_Json['name']
-    idCategory = req_Json['idCategory']
-    subCategory = SubCategory(name,idCategory)
-    db.session.add(subCategory)
-    db.session.commit()
+    nameCategory= req_Json['nameCategory']
+    category = Category.query.filter_by(name=nameCategory).first()
+    idCategory = category.id
+    subCategory = SubCategory(name,idCategory,nameCategory)
+    try:
+        db.session.add(subCategory)
+        db.session.commit()
+    except Exception:
+        return "0" #Name already used
+    #Create folder    
+    path = os.path.join('uploads/'+nameCategory, name)
+    os.mkdir(path)
     return "1" #Add successfully
 
 
@@ -23,10 +32,16 @@ def AddSubCategory():
 def UpdateSubCategory(_id):
     req_Json = request.json
     subCategory = SubCategory.query.get(_id)
+    src_path = 'uploads/'+subCategory.nameCategory + '/' + subCategory.name
     subCategory.name = req_Json['name']
-    subCategory.idCategory = req_Json['idCategory']
-    
-    db.session.commit()
+    subCategory.nameCategory= req_Json['nameCategory']
+    try:
+        category = Category.query.filter_by(name=subCategory.nameCategory).first()
+        subCategory.idCategory = category.id
+        db.session.commit()
+        os.rename(src_path,'uploads/'+subCategory.nameCategory + '/' + subCategory.name)
+    except Exception:
+        return "0" #Name already used
 
     return '1' #SubCategory updated !!
 
@@ -37,7 +52,7 @@ def GetAllSubCategory():
     subCategorys = SubCategory.query.all()
     subCategory_schema = SubCategorySchema(many=True)
     output = subCategory_schema.dump(subCategorys)
-    return jsonify({'SubCategorys' : output})
+    return jsonify({'SubCategories' : output})
 
 
 
@@ -55,6 +70,10 @@ def GetListSubCategoryByCategory(_id):
 @subCategory.route('/DeleteSubCategory/<int:_id>', methods = ['DELETE'])
 def DeleteSubCategory(_id):
     subCategory = SubCategory.query.get(_id)
+    try:
+        os.rmdir('uploads/'+subCategory.nameCategory+'/'+subCategory.name)
+    except Exception:
+        return "0" #Folder is not Empty
     db.session.delete(subCategory)        
     db.session.commit()
 

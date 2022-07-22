@@ -1,5 +1,6 @@
+import os
 from flask import Blueprint, jsonify, request
-from models import Category, CategorySchema, db
+from models import Category, CategorySchema, SubCategory, db
 
 
 #blueprint setup
@@ -12,8 +13,14 @@ def AddCategory():
     req_Json = request.json
     name = req_Json['name']
     category = Category(name)
-    db.session.add(category)
-    db.session.commit()
+    try:
+        db.session.add(category)
+        db.session.commit()
+    except Exception:
+        return "0" #Name already used
+    #Create folder    
+    path = os.path.join('uploads/', name)
+    os.mkdir(path)
     return "1" #Add successfully
 
 
@@ -22,9 +29,19 @@ def AddCategory():
 def UpdateCategory(_id):
     req_Json = request.json
     category = Category.query.get(_id)
+    subcategories = SubCategory.query.filter(
+    SubCategory.nameCategory ==category.name
+    )
+    src_path = 'uploads/'+category.name
     category.name = req_Json['name']
-    
-    db.session.commit()
+    for i in subcategories:
+        i.nameCategory = category.name
+    try:
+        db.session.commit()
+        os.rename(src_path,'uploads/'+category.name)
+    except Exception:
+        return "0" #Name already used
+
 
     return '1' #category updated !!
 
@@ -42,6 +59,10 @@ def GetAllCategories():
 @category.route('/DeleteCategory/<int:_id>', methods = ['DELETE'])
 def DeleteCategory(_id):
     category = Category.query.get(_id)
+    try:
+        os.rmdir('uploads/'+category.name)
+    except Exception:
+        return "0" #Folder is not Empty
     db.session.delete(category)        
     db.session.commit()
 
