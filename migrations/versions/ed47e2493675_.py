@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: e29d91c05080
+Revision ID: ed47e2493675
 Revises: 
-Create Date: 2022-07-19 13:25:41.129706
+Create Date: 2022-07-22 11:06:42.208111
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e29d91c05080'
+revision = 'ed47e2493675'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,19 +27,23 @@ def upgrade():
     op.create_table('Direction',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=200), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
     )
     op.create_table('Departement',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('idDirection', sa.Integer(), nullable=True),
     sa.Column('name', sa.String(length=200), nullable=False),
+    sa.Column('nameDirection', sa.String(length=200), nullable=False),
     sa.ForeignKeyConstraint(['idDirection'], ['Direction.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
     )
     op.create_table('SubCategory',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=200), nullable=False),
     sa.Column('idCategory', sa.Integer(), nullable=True),
+    sa.Column('nameCategory', sa.String(length=200), nullable=False),
     sa.ForeignKeyConstraint(['idCategory'], ['Category.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
@@ -69,8 +73,10 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('idDepartement', sa.Integer(), nullable=True),
     sa.Column('name', sa.String(length=200), nullable=False),
+    sa.Column('nameDepartement', sa.String(length=200), nullable=False),
     sa.ForeignKeyConstraint(['idDepartement'], ['Departement.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
     )
     op.create_table('Access',
     sa.Column('id', sa.Integer(), nullable=False),

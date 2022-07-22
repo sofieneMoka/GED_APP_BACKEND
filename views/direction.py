@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from models import Direction, DirectionSchema, db
+from models import Departement, Direction, DirectionSchema, db
 
 
 #blueprint setup
@@ -12,8 +12,12 @@ def AddDirection():
     req_Json = request.json
     name = req_Json['name']
     direction = Direction(name)
-    db.session.add(direction)
-    db.session.commit()
+    try:
+        db.session.add(direction)
+        db.session.commit()
+    except Exception:
+        return "0" #Name already used
+        
     return "1" #Add successfully
 
 
@@ -22,9 +26,16 @@ def AddDirection():
 def UpdateDirection(_id):
     req_Json = request.json
     direction = Direction.query.get(_id)
+    departements = Departement.query.filter(
+    Departement.nameDirection==direction.name
+    )
     direction.name = req_Json['name']
-    
-    db.session.commit()
+    try:
+        for i in departements:
+            i.nameDirection = direction.name
+        db.session.commit()
+    except Exception:
+        return "0" #Name already used
 
     return '1' #direction updated !!
 
@@ -43,7 +54,15 @@ def GetAllDirection():
 @direction.route('/DeleteDirection/<int:_id>', methods = ['DELETE'])
 def DeleteDirection(_id):
     direction = Direction.query.get(_id)
-    db.session.delete(direction)        
-    db.session.commit()
-
-    return '1' #direction deleted !!
+    departements = Departement.query.filter(
+    Departement.nameDirection==direction.name
+    )
+    x=0
+    for i in departements : 
+        x = x+1
+    if x==0:
+        db.session.delete(direction)        
+        db.session.commit()
+        return '1' #direction deleted !!
+    else :
+        return '0' #direction containes roles

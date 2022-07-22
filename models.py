@@ -85,11 +85,13 @@ class SubCategory(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(200),unique=True,nullable=False)
     idCategory = db.Column(db.Integer, db.ForeignKey('Category.id'))
+    nameCategory = db.Column(db.String(200),nullable=False)
     
 
-    def __init__(self, name, idCategory):
+    def __init__(self, name, idCategory, nameCategory):
         self.name = name
         self.idCategory = idCategory
+        self.nameCategory = nameCategory
         
 
 class SubCategorySchema(ma.SQLAlchemyAutoSchema):
@@ -143,12 +145,14 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     idDepartement = db.Column(db.Integer, db.ForeignKey('Departement.id'))
     name = db.Column(db.String(200),unique=True,nullable=False)
+    nameDepartement = db.Column(db.String(200),nullable=False)
 
 
 
-    def __init__(self, name,idDepartement):
+    def __init__(self, name,idDepartement, nameDepartement):
         self.name = name
         self.idDepartement = idDepartement
+        self.nameDepartement = nameDepartement
         
 
 class RoleSchema(ma.SQLAlchemyAutoSchema):
@@ -163,11 +167,13 @@ class Departement(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     idDirection = db.Column(db.Integer, db.ForeignKey('Direction.id'))
     name = db.Column(db.String(200),unique=True,nullable=False)
+    nameDirection = db.Column(db.String(200),nullable=False)
 
 
 
-    def __init__(self, name, idDirection):
+    def __init__(self, name, idDirection, nameDirection):
         self.name = name
+        self.nameDirection = nameDirection
         self.idDirection = idDirection
         
 
