@@ -9,12 +9,12 @@ To run the examples in your local environment:
 
 2. Create and activate a virtual environment::
 
-      virtualenv env -p python3
-      source env/bin/activate
+      virtualenv env
+      env/Scripts/activate
 
 3. Install requirements::
 
-      pip install -r examples/sqla/requirements.txt
+      pip install -r requirements.txt
 
 4. Run the application::
 
