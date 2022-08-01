@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, jsonify, request
-from models import Category, SubCategory, SubCategorySchema, db
+from models import Category, Document, SubCategory, SubCategorySchema, db
 
 
 #blueprint setup
@@ -33,8 +33,17 @@ def UpdateSubCategory(_id):
     req_Json = request.json
     subCategory = SubCategory.query.get(_id)
     src_path = 'uploads/'+subCategory.nameCategory + '/' + subCategory.name
+
+    documents = Document.query.filter(
+    Document.nameSubCategory ==subCategory.name
+    )
+
     subCategory.name = req_Json['name']
     subCategory.nameCategory= req_Json['nameCategory']
+
+    for i in documents:
+        i.nameSubCategory = subCategory.name
+
     try:
         category = Category.query.filter_by(name=subCategory.nameCategory).first()
         subCategory.idCategory = category.id

@@ -1,4 +1,4 @@
-from models import User, UserSchema, db
+from models import Document, User, UserSchema, db
 from flask import Blueprint, jsonify, request
 from datetime import timedelta
 from flask_bcrypt import Bcrypt
@@ -87,11 +87,25 @@ def Update(_id):
     if request.method == 'PUT':
         req_Json = request.json
         user = User.query.get(_id)
+        
+        documents1 = Document.query.filter(
+        Document.nameModificator == user.f_name + user.l_name
+        )
+
+        documents = Document.query.filter(
+        Document.nameCreator == user.f_name + user.l_name
+        )
         user.f_name = req_Json['f_name']
         user.l_name = req_Json['l_name']
         user.role = req_Json['role']
         user.status = req_Json['status']
-        
+
+        for i in documents1:
+            i.nameModificator = user.f_name + user.l_name
+
+        for i in documents:
+            i.nameCreator = user.f_name + user.l_name
+
         db.session.commit()
 
         return '1' #user updated !!
