@@ -41,7 +41,7 @@ class Document(db.Model):
     name = db.Column(db.String(200),unique=True,nullable=False)
     Format = db.Column(db.String(200),nullable=False)
     description = db.Column(db.String(200),nullable=False)
-    creator = db.Column(db.String(200))
+    nameCreator = db.Column(db.String(200))
     note = db.Column(db.String(200),nullable=False)
     tag=db.Column(db.String(200))
     status=db.Column(db.String(200))
@@ -49,18 +49,17 @@ class Document(db.Model):
     size = db.Column(db.Float(),nullable=False)
     creationDate = db.Column(db.DateTime,nullable=False)
     lastModification = db.Column(db.DateTime,nullable=False)
-    modificatorId = db.Column(db.Integer)
-    creatorId = db.Column(db.Integer)
-    idSubCategory = db.Column(db.Integer, db.ForeignKey('SubCategory.id'))
-    idCategory = db.Column(db.Integer)
+    nameModificator = db.Column(db.String(200))
+    nameSubCategory = db.Column(db.String(200))
+    nameCategory = db.Column(db.String(200))
 
 
 
-    def __init__(self, name, Format,description, creator, note, tag, status, path, size, creationDate, lastModification, modificatorId, creatorId, idSubCategory, idCategory):
+    def __init__(self, name, Format,description, nameCreator, note, tag, status, path, size, creationDate, lastModification, modificatorId, nameSubCategory, nameCategory):
         self.name = name
         self.Format = Format
         self.description = description
-        self.creator = creator
+        self.nameCreator = nameCreator
         self.note = note
         self.tag = tag
         self.status = status
@@ -69,9 +68,8 @@ class Document(db.Model):
         self.creationDate = creationDate
         self.lastModification = lastModification
         self.modificatorId = modificatorId
-        self.creatorId = creatorId
-        self.idSubCategory = idSubCategory
-        self.idCategory = idCategory
+        self.nameSubCategory = nameSubCategory
+        self.nameCategory = nameCategory
         
 
 class DocumentSchema(ma.SQLAlchemyAutoSchema):

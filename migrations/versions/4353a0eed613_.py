@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ed47e2493675
+Revision ID: 4353a0eed613
 Revises: 
-Create Date: 2022-07-22 11:06:42.208111
+Create Date: 2022-08-01 12:13:49.175280
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ed47e2493675'
+revision = '4353a0eed613'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,6 +30,25 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
+    op.create_table('Document',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=200), nullable=False),
+    sa.Column('Format', sa.String(length=200), nullable=False),
+    sa.Column('description', sa.String(length=200), nullable=False),
+    sa.Column('nameCreator', sa.String(length=200), nullable=True),
+    sa.Column('note', sa.String(length=200), nullable=False),
+    sa.Column('tag', sa.String(length=200), nullable=True),
+    sa.Column('status', sa.String(length=200), nullable=True),
+    sa.Column('path', sa.String(length=200), nullable=True),
+    sa.Column('size', sa.Float(), nullable=False),
+    sa.Column('creationDate', sa.DateTime(), nullable=False),
+    sa.Column('lastModification', sa.DateTime(), nullable=False),
+    sa.Column('nameModificator', sa.Integer(), nullable=True),
+    sa.Column('nameSubCategory', sa.Integer(), nullable=True),
+    sa.Column('nameCategory', sa.Integer(), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
+    )
     op.create_table('Departement',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('idDirection', sa.Integer(), nullable=True),
@@ -45,27 +64,6 @@ def upgrade():
     sa.Column('idCategory', sa.Integer(), nullable=True),
     sa.Column('nameCategory', sa.String(length=200), nullable=False),
     sa.ForeignKeyConstraint(['idCategory'], ['Category.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
-    )
-    op.create_table('Document',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=200), nullable=False),
-    sa.Column('Format', sa.String(length=200), nullable=False),
-    sa.Column('description', sa.String(length=200), nullable=False),
-    sa.Column('creator', sa.String(length=200), nullable=True),
-    sa.Column('note', sa.String(length=200), nullable=False),
-    sa.Column('tag', sa.String(length=200), nullable=True),
-    sa.Column('status', sa.String(length=200), nullable=True),
-    sa.Column('path', sa.String(length=200), nullable=True),
-    sa.Column('size', sa.Float(), nullable=False),
-    sa.Column('creationDate', sa.DateTime(), nullable=False),
-    sa.Column('lastModification', sa.DateTime(), nullable=False),
-    sa.Column('modificatorId', sa.Integer(), nullable=True),
-    sa.Column('creatorId', sa.Integer(), nullable=True),
-    sa.Column('idSubCategory', sa.Integer(), nullable=True),
-    sa.Column('idCategory', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['idSubCategory'], ['SubCategory.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
@@ -111,9 +109,9 @@ def downgrade():
     op.drop_table('user')
     op.drop_table('Access')
     op.drop_table('Role')
-    op.drop_table('Document')
     op.drop_table('SubCategory')
     op.drop_table('Departement')
+    op.drop_table('Document')
     op.drop_table('Direction')
     op.drop_table('Category')
     # ### end Alembic commands ###
