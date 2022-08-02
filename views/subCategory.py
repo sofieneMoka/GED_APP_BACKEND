@@ -65,10 +65,10 @@ def GetAllSubCategory():
 
 
 
-@subCategory.route('/GetListSubCategoryByCategory/<int:_id>', methods = ['GET'])
-def GetListSubCategoryByCategory(_id):
+@subCategory.route('/GetListSubCategoryByCategory/<string:_nameCategory>', methods = ['GET'])
+def GetListSubCategoryByCategory(_nameCategory):
     subCategorys = SubCategory.query.filter(
-        SubCategory.idCategory == _id
+        SubCategory.nameCategory == _nameCategory
     )
     subCategory_schema = SubCategorySchema(many=True)
     output = subCategory_schema.dump(subCategorys)
