@@ -28,15 +28,12 @@ def UploadDocument(_id):
         lastModification = datetime.today().strftime('%Y-%m-%d')
         nameModificator = user.f_name + user.l_name
         nameSubCategory = request.form['nameSubCategory']
-        #get the SubCategory and the Category
-        SubCategory1 = SubCategory.query.filter_by(name=nameSubCategory).first()
-        Category1 = Category.query.get(SubCategory1.idCategory)
-        nameCategory = Category1.name
+        nameCategory = request.form['nameCategory']
         #path of the document
-        path= 'uploads'+ '/' + Category1.name + '/' + SubCategory1.name + '/' + name + '.' + Format
+        path= 'uploads'+ '/' + nameCategory + '/' + nameSubCategory + '/' + name + '.' + Format
         doc = Document(name,Format,description,nameCreator,note,tag,status,path,size,creationDate,lastModification,nameModificator,nameSubCategory,nameCategory)
         #upload the document 
-        file.save(os.path.join('uploads'+ '/' + Category1.name + '/' + SubCategory1.name + '/'  + name + '.' + Format))
+        file.save(os.path.join('uploads'+ '/' + nameCategory + '/' + nameSubCategory + '/'  + name + '.' + Format))
         try:
             db.session.add(doc)
             db.session.commit()
@@ -50,7 +47,6 @@ def UpdateDocument(_idDoc,_idUser):
     if request.method == 'PUT':
         document = Document.query.get(_idDoc)
         user = User.query.get(_idUser)
-
         document.nameModificator = user.f_name + user.l_name
         document.lastModification = datetime.now().strftime('%Y-%m-%d')
         document.description = request.form['description']
@@ -58,13 +54,11 @@ def UpdateDocument(_idDoc,_idUser):
         document.tag= request.form['tag']
         document.status= request.form['status']
         document.nameSubCategory= request.form['nameSubCategory']
-        #get the SubCategory and the Category
-        SubCategory1 = SubCategory.query.filter_by(name=document.nameSubCategory).first()
-        Category1 = Category.query.get(SubCategory1.idCategory)
+        document.nameCategory= request.form['nameCategory']
         # Absolute path of a file
         old_name = document.path
         document.name = request.form['name']
-        new_name = "uploads/" + Category1.name + "/"+ SubCategory1.name + "/" + document.name + "." + document.Format
+        new_name = "uploads/" + document.nameCategory + "/"+ document.nameSubCategory + "/" + document.name + "." + document.Format
         document.path = new_name
         # Renaming the file
         os.rename(old_name, new_name)
