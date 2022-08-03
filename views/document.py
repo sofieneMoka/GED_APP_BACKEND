@@ -101,7 +101,7 @@ def GetAllDocument():
 
 
 @document.route('/SearchDocumentWithFilters/<string:_Name>/<string:_creator>/<string:_Tags>/<string:_StartDate>/<string:_EndDate>/<string:_SubCategory>/<string:_Category>', methods= ['GET'])
-def SearchDocumentByName(_Name,_creator,_Tags,_StartDate,_EndDate,_SubCategory,_Category):
+def SearchDocumentWithFilters(_Name,_creator,_Tags,_StartDate,_EndDate,_SubCategory,_Category):
     if _Name == "Null":
         _Name = ""
     if _creator == "Null":
@@ -109,27 +109,36 @@ def SearchDocumentByName(_Name,_creator,_Tags,_StartDate,_EndDate,_SubCategory,_
     if _Tags == "Null":
         _Tags = ""
     if _StartDate == "Null":
-        _StartDate = ""
+        _StartDate = "2001-01-01"
     if _EndDate == "Null":
-        _EndDate = ""
+        _EndDate = "2099-01-01"
     if _Category == "Null":
         _Category = ""
     if _SubCategory == "Null":
         _SubCategory = ""
 
 
-
-    SubCategory1 = SubCategory.query.filter_by(name = _SubCategory).first()
-    Category1 = Category.query.filter_by(name = _Category).first()
-
     documents = Document.query.filter(
     Document.name.contains(_Name),
-    Document.creator.contains(_creator),
+    Document.nameCreator.contains(_creator),
     Document.tag.contains(_Tags),
-    Document.idSubCategory == SubCategory1.id,
-    Document.idCategory == Category1.id,
+    Document.nameSubCategory.contains(_SubCategory),
+    Document.nameCategory.contains(_Category),
     Document.creationDate >= _StartDate,
     Document.creationDate <= _EndDate
+    )
+    document_schema = DocumentSchema(many=True)
+    output = document_schema.dump(documents)
+    return jsonify({'Documents' : output})
+
+
+
+
+@document.route('/SearchDocumentBySubCategory/<string:_SubCategory>', methods= ['GET'])
+def SearchDocumentBySubCategory(_SubCategory):
+
+    documents = Document.query.filter(
+    Document.nameSubCategory.contains(_SubCategory)
     )
     document_schema = DocumentSchema(many=True)
     output = document_schema.dump(documents)
