@@ -56,10 +56,10 @@ def GetAllDepartement():
 
 
 
-@departement.route('/GetListDepartementByDirection/<int:_id>', methods = ['GET'])
-def GetListDepartementByDirection(_id):
+@departement.route('/GetListDepartementByDirection/<string:_DirectionName>', methods = ['GET'])
+def GetListDepartementByDirection(_DirectionName):
     departements = Departement.query.filter(
-        Departement.idDirection == _id
+        Departement.nameDirection == _DirectionName
     )
     departement_schema = DepartementSchema(many=True)
     output = departement_schema.dump(departements)

@@ -56,6 +56,19 @@ def GetAllCategories():
 
 
 
+@category.route('/SearchCategoryByName/<string:_NameCategory>', methods = ['GET'])
+def SearchCategoryByName(_NameCategory):
+    if _NameCategory == "Null":
+        _NameCategory = ""
+    categorys = Category.query.filter(
+        Category.name.contains(_NameCategory)
+    )
+    category_schema = CategorySchema(many=True)
+    output = category_schema.dump(categorys)
+    return jsonify({'Categories' : output})
+
+
+
 @category.route('/DeleteCategory/<int:_id>', methods = ['DELETE'])
 def DeleteCategory(_id):
     category = Category.query.get(_id)
