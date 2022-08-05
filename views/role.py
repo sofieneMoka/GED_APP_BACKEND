@@ -53,10 +53,10 @@ def GetAllRole():
 
 
 
-@role.route('/GetListRoleByDepartement/<int:_id>', methods = ['GET'])
-def GetListRoleByDepartement(_id):
+@role.route('/GetListRoleByDepartement/<string:_DepartementName>', methods = ['GET'])
+def GetListRoleByDepartement(_DepartementName):
     roles = Role.query.filter(
-        Role.idDepartement == _id
+        Role.nameDepartement == _DepartementName
     )
     role_schema = RoleSchema(many=True)
     output = role_schema.dump(roles)

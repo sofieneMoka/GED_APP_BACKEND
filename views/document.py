@@ -14,6 +14,7 @@ document = Blueprint('document',__name__)
 def UploadDocument(_id):
     if request.method == 'POST':
         user = User.query.get(_id)
+        print("aaaaaaaaaaaaaa")
         file = request.files['file']
         name = request.form['name']
         file.seek(0, os.SEEK_END)
@@ -48,6 +49,7 @@ def UpdateDocument(_idDoc,_idUser):
         document = Document.query.get(_idDoc)
         user = User.query.get(_idUser)
         document.nameModificator = user.f_name + user.l_name
+        print(user.f_name)
         document.lastModification = datetime.now().strftime('%Y-%m-%d')
         document.description = request.form['description']
         document.note = request.form['note']
