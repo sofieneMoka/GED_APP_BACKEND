@@ -1,5 +1,5 @@
 from models import Document, DocumentSchema, db, User, SubCategory, Category
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_from_directory
 from datetime import date, datetime
 import os
 from werkzeug.utils import secure_filename
@@ -10,21 +10,20 @@ document = Blueprint('document',__name__)
 
 
 
+
 @document.route('/UploadDocument/<int:_id>', methods = ['POST'])
 def UploadDocument(_id):
     if request.method == 'POST':
-        user = User.query.get(_id)
-        print("aaaaaaaaaaaaaa")
         file = request.files['file']
+        user = User.query.get(_id)
         name = request.form['name']
-        file.seek(0, os.SEEK_END)
         Format = secure_filename(file.filename).rsplit('.', 1)[1].lower()
         description = request.form['description']
         nameCreator = user.f_name + user.l_name
         note = request.form['note']
         tag= request.form['tag']
         status= request.form['status']
-        size = file.tell()
+        size= request.form['size']
         creationDate = datetime.today().strftime('%Y-%m-%d')
         lastModification = datetime.today().strftime('%Y-%m-%d')
         nameModificator = user.f_name + user.l_name
@@ -101,6 +100,12 @@ def GetAllDocument():
     return jsonify({'Documents' : output})
 
 
+@document.route('/getDocument/<int:_idDoc>')
+def getDocument(_idDoc):
+    document = Document.query.get(_idDoc)
+    filename=document.name+'.'+document.Format
+    file = send_from_directory("uploads/"+document.nameCategory +'/'+document.nameSubCategory + '/',filename, as_attachment=True)
+    return file
 
 @document.route('/SearchDocumentWithFilters/<string:_Name>/<string:_creator>/<string:_Tags>/<string:_StartDate>/<string:_EndDate>/<string:_SubCategory>/<string:_Category>', methods= ['GET'])
 def SearchDocumentWithFilters(_Name,_creator,_Tags,_StartDate,_EndDate,_SubCategory,_Category):
@@ -145,3 +150,24 @@ def SearchDocumentBySubCategory(_SubCategory):
     document_schema = DocumentSchema(many=True)
     output = document_schema.dump(documents)
     return jsonify({'Documents' : output})
+
+
+
+
+
+
+@document.route('/SaveDocument/<int:_idUser>/<int:_idDoc>', methods = ['POST'])
+def SaveDocument(_idUser,_idDoc):
+    if request.method == 'POST':
+        user = User.query.get(_idUser)
+        document = Document.query.get(_idDoc)
+        file = request.files['file']
+        document.lastModification = datetime.now().strftime('%Y-%m-%d')
+        document.nameModificator = user.f_name + user.l_name
+
+        #upload the document 
+        file.save(os.path.join(document.path))
+
+        db.session.commit()
+
+        return "1" #uploaded successfully
